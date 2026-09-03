@@ -117,13 +117,15 @@
     <!-- Footer -->
     <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
         <p>&copy; 2026 Chrouaa Crypto. جميع الحقوق محفوظة.</p>
-        <p class="mt-1 text-slate-600">عقد المنصة: <span class="font-mono text-slate-400">0x71732e1f9b8422bbb335e6f5748c05659a827c94d10fa</span></p>
+        <p class="mt-1 text-slate-600">عقد المنصة: <span class="font-mono text-slate-400">0x71732e1f9b8422bbb335e6f5748c05659a823d39</span></p>
     </footer>
 
     <!-- Web3 & Script Integration -->
+    <script src="https://cdn.jsdelivr.5.7.2/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script>
-        const CONTRACT_ADDRESS = "0x71732e1f9b8422bbb335e6f5748c05659a827c94d10fa";
+        // استخدام عنوان العقد الصحيح والموثق بدقة
+        const CONTRACT_ADDRESS = "0x71732e1f9b8422bbb335e6f5748c05659a823d39";
         const CONTRACT_ABI = [
             "function createToken(string _name, string _symbol, uint256 _totalSupply, bool _hasAirdrop, address _referrer) external payable"
         ];
@@ -174,10 +176,8 @@
             const decimals = parseInt(document.getElementById('tokenDecimals').value) || 18;
             const hasAirdrop = document.getElementById('airdropToggle').checked;
             
-            // تحويل إجمالي العدد إلى الصيغة الصحيحة (Wei) بناءً على الأعداد العشرية
             const totalSupply = ethers.utils.parseUnits(supplyInput, decimals);
 
-            // استخراج رابط الإحالة بأمان
             const urlParams = new URLSearchParams(window.location.search);
             let referrer = urlParams.get('ref');
             if (!referrer || !ethers.utils.isAddress(referrer)) {
@@ -189,7 +189,7 @@
                 const signer = provider.getSigner();
                 const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-                // رسوم الخدمة التجريبية
+                // رسوم الخدمة التجريبية المعروضة
                 const feeValue = ethers.utils.parseEther("0.001");
 
                 alert("جاري إرسال المعاملة إلى العقد الذكي لتنفيذ الإنشاء وتوزيع الرسوم آلياً...");
