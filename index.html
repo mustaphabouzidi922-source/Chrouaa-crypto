@@ -103,6 +103,7 @@
 
     <script>
         const CONTRACT_ADDRESS = "0xd9b9eee0d435bc827b9a2a94cedd3e7af2f8d238";
+        // تم تحديث الـ ABI ليتطابق حصرياً مع الدالة الصحيحة في العقد دون أي التباس
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
             "function getUserTokens(address _user) external view returns (address[] memory)"
@@ -151,6 +152,7 @@
                     document.getElementById("connectWallet").innerText = "تم الاتصال بنجاح";
                     document.getElementById("refLink").value = window.location.origin + window.location.pathname + "?ref=" + userAccount;
                     
+                    // ربط العقد بشكل مباشر ودقيق مع الـ Signer لضمان استدعاء العقد وليس تحويلاً عادياً
                     factoryContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
                     autoFetchLatestToken();
                     document.getElementById("statusMessage").innerText = "✅ تم ربط المحفظة بنجاح.";
@@ -183,24 +185,23 @@
             }
 
             try {
-                document.getElementById("statusMessage").innerText = "⏳ جاري إرسال المعاملة للمحفظة وتأكيد الرسوم...";
+                document.getElementById("statusMessage").innerText = "⏳ جاري إرسال طلب إنشاء العملة للعقد الذكي...";
                 
                 const fee = ethers.utils.parseEther("0.001");
                 const referrer = getReferrerFromUrl();
 
+                // استدعاء دالة العقد حصرياً بالطريقة الصحيحة لخصم الرسوم وإنشاء العقد الفرعي للعملة
                 const tx = await factoryContract.createToken(name, symbol, supplyValue, referrer, { 
                     value: fee,
                     gasLimit: 3000000
                 });
                 
-                document.getElementById("statusMessage").innerText = "📡 تم استلام المعاملة، جاري التوثيق الفوري والآلي...";
+                document.getElementById("statusMessage").innerText = "📡 تم إرسال المعاملة للعقد، بانتظار التأكيد النهائي...";
                 
-                // انتظار تأكيد المعاملة على البلوكشين
                 await tx.wait();
                 
-                document.getElementById("statusMessage").innerText = "🎉 مبروك! تمت العملية بنجاح، جاري جلب العملة وتوثيقها...";
+                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة عبر العقد بنجاح تام.";
                 
-                // جلب وتحديث العملات بشكل آلي فوراً
                 await autoFetchLatestToken();
                 
             } catch (error) {
@@ -210,7 +211,6 @@
             }
         }
 
-        // دالة لجلب وتوثيق العملات آلياً من العقد مباشرة
         async function autoFetchLatestToken() {
             try {
                 if (!factoryContract || !userAccount) return;
@@ -222,7 +222,6 @@
                     return;
                 }
 
-                // وضع أحدث عملة مباشرة في خانة الإسقاط الجوي بشكل آلي
                 const latestToken = tokens[tokens.length - 1];
                 document.getElementById("airdropTokenAddress").value = latestToken;
 
@@ -235,7 +234,7 @@
                         </div>`;
                 });
                 
-                document.getElementById("statusMessage").innerText = "✅ تم توثيق وجلب العملات بنجاح تام.";
+                document.getElementById("statusMessage").innerText = "✅ تم جلب وتوثيق العملة بنجاح.";
             } catch (err) {
                 console.error(err);
             }
