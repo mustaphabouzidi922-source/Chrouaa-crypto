@@ -101,7 +101,6 @@
     </div>
 
     <script>
-        // تم تحديث عنوان العقد ليكون العنوان الموثق الجديد
         const CONTRACT_ADDRESS = "0xd9b9eeee0d435bc827b9a2a94cedd3e7af2f80";
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
@@ -131,7 +130,7 @@
         function getReferrerFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
-            if (ref && ethers.utils.isAddress(ref)) {
+            if (ref && ref.startsWith("0x") && ref.length === 42 && ethers.utils.isAddress(ref)) {
                 return ref;
             }
             return "0x0000000000000000000000000000000000000000";
@@ -206,8 +205,8 @@
 
         function claimAirdrop() {
             const tokenAddr = document.getElementById("airdropTokenAddress").value.trim();
-            if (!tokenAddr || !ethers.utils.isAddress(tokenAddr)) {
-                alert("الرجاء إدخال عنوان عقد عملة صالح (Token Address) أولاً!");
+            if (!tokenAddr || !tokenAddr.startsWith("0x") || tokenAddr.length !== 42 || !ethers.utils.isAddress(tokenAddr)) {
+                alert("الرجاء إدخال عنوان عقد عملة صالح (Token Address) يبدأ بـ 0x ويتكون من 42 حرفاً!");
                 return;
             }
             document.getElementById("statusMessage").innerText = "🪂 تم تفعيل حملة الإسقاط الجوي بنجاح!";
