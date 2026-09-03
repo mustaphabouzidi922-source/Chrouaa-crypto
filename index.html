@@ -25,7 +25,9 @@
         .section-box h3 { font-size: 13px; color: #38bdf8; margin: 0 0 8px 0; }
         .social-links { display: flex; justify-content: space-around; margin-top: 15px; font-size: 13px; }
         .social-links a { color: #38bdf8; text-decoration: none; font-weight: bold; }
-        .token-item { font-size: 12px; background: #1e293b; padding: 8px; margin-top: 6px; border-radius: 6px; border: 1px solid #475569; word-break: break-all; }
+        .token-item { font-size: 12px; background: #1e293b; padding: 8px; margin-top: 6px; border-radius: 6px; border: 1px solid #475569; word-break: break-all; display: flex; justify-content: space-between; align-items: center; }
+        .copy-btn { background: #334155; color: #38bdf8; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .copy-btn:hover { background: #475569; }
         .logo-generator { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
         .logo-preview { width: 45px; height: 45px; border-radius: 50%; background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 14px; }
     </style>
@@ -36,7 +38,7 @@
         <div class="brand">
             <img id="platformLogo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230284c7'/><text x='50' y='57' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>CC</text></svg>" alt="Chrouaa Crypto Logo">
             <h1>شروعة كريبتو (Chrouaa Crypto)</h1>
-            <p class="subtitle">المنصة النهائية لإنشاء وتوثيق عملات BEP-20 ونظام الإسقاط الجوي</p>
+            <p class="subtitle">المنصة الموثوقة لإنشاء عملات BEP-20 ونظام الإسقاط الجوي</p>
         </div>
         
         <button id="connectWallet" onclick="connectWallet()">ربط المحفظة</button>
@@ -86,7 +88,7 @@
 
         <div class="section-box">
             <h3>📊 لوحة تتبع عملاتك المنشأة</h3>
-            <div id="myTokensList" style="max-height: 110px; overflow-y: auto;">
+            <div id="myTokensList" style="max-height: 130px; overflow-y: auto;">
                 <p style="font-size: 12px; color: #64748b; text-align: center; margin: 5px 0;">لا توجد عملات معروضة حالياً</p>
             </div>
         </div>
@@ -94,19 +96,32 @@
         <div class="social-links">
             <a href="https://t.me/your_channel" target="_blank">Telegram</a>
             <a href="https://twitter.com/your_handle" target="_blank">Twitter</a>
-            <a href="https://bscscan.com/address/0x5396D1Fd33791d8b74C88af4f8220c3467b3be26" target="_blank">BscScan Contract</a>
+            <a href="https://bscscan.com/address/0xd9b9eeee0d435bc827b9a2a94cedd3e7af2f80" target="_blank">BscScan Verified Contract</a>
         </div>
     </div>
 
     <script>
-        // عنوان العقد الجديد والموثق بدقة
-        const CONTRACT_ADDRESS = "0x5396D1Fd33791d8b74C88af4f8220c3467b3be26";
+        // تم تحديث عنوان العقد ليكون العنوان الموثق الجديد
+        const CONTRACT_ADDRESS = "0xd9b9eeee0d435bc827b9a2a94cedd3e7af2f80";
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
             "function getUserTokens(address _user) external view returns (address[] memory)"
         ];
 
         let provider, signer, factoryContract, userAccount;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        connectWallet();
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        });
 
         function updateSymbolPreview(val) {
             const preview = document.getElementById("symbolPreview");
@@ -137,7 +152,7 @@
                     
                     factoryContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
                     loadUserTokens();
-                    document.getElementById("statusMessage").innerText = "✅ تم ربط المحفظة بنجاح.";
+                    document.getElementById("statusMessage").innerText = "✅ تم ربط المحفظة بنجاح واسترداد بياناتك.";
                 } catch (error) {
                     alert("فشل اتصال المحفظة: " + error.message);
                 }
@@ -161,7 +176,6 @@
                 return;
             }
 
-            // التحقق من أن الكمية لا تتجاوز 1 ترليون
             if (Number(supplyValue) > 1000000000000 || Number(supplyValue) <= 0) {
                 alert("الخطأ: الحد الأقصى لكمية العملة هو 1 ترليون ولا يمكن تجاوزه!");
                 return;
@@ -181,7 +195,7 @@
                 document.getElementById("statusMessage").innerText = "📡 تم الإرسال للبلوكشين، بانتظار التأكيد...";
                 await tx.wait();
                 
-                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وإرسالها لمحفظتك بنجاح.";
+                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وتوجيهها لمحفظتك بنجاح.";
                 loadUserTokens();
             } catch (error) {
                 console.error(error);
@@ -213,7 +227,11 @@
 
                 listContainer.innerHTML = "";
                 tokens.forEach((addr, index) => {
-                    listContainer.innerHTML += `<div class="token-item">عملة ${index + 1}: <a href="https://bscscan.com/address/${addr}" target="_blank" style="color: #38bdf8;">${addr}</a></div>`;
+                    listContainer.innerHTML += `
+                        <div class="token-item">
+                            <span>عملة ${index + 1}: <a href="https://bscscan.com/address/${addr}" target="_blank" style="color: #38bdf8;">${addr.substring(0, 6)}...${addr.substring(38)}</a></span>
+                            <button class="copy-btn" onclick="navigator.clipboard.writeText('${addr}'); alert('تم نسخ عنوان العملة بنجاح!');">نسخ العقد</button>
+                        </div>`;
                 });
             } catch (err) {
                 console.error(err);
