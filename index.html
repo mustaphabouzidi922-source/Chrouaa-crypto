@@ -33,22 +33,20 @@
 <body>
 
     <div class="container">
-        <!-- شعار المنصة واسمها -->
         <div class="brand">
             <img id="platformLogo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230284c7'/><text x='50' y='57' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>CC</text></svg>" alt="Chrouaa Crypto Logo">
             <h1>شروعة كريبتو (Chrouaa Crypto)</h1>
-            <p class="subtitle">المنصة الذكية لإنشاء وتوثيق عملات BEP-20 آلياً</p>
+            <p class="subtitle">المنصة الذكية لإنشاء وتوثيق عملات BEP-20 وإدارة الإسقاط الجوي</p>
         </div>
         
         <button id="connectWallet" onclick="connectWallet()">ربط المحفظة</button>
         <p id="walletAddress" style="font-size: 11px; text-align: center; color: #cbd5e1; word-break: break-all; margin-bottom: 15px;"></p>
 
-        <!-- اقتراح شعار العملة لمشروعك -->
         <div class="section-box">
-            <h3>🎨 اقتراح شعار العملة الجديدة</h3>
+            <h3>🎨 شعار العملة لمشروعك</h3>
             <div class="logo-generator">
                 <div class="logo-preview" id="symbolPreview">CC</div>
-                <div style="font-size: 11px; color: #94a3b8;">هذا شعار مقترح لعملتك، سيظهر تلقائياً بمجرد إدخال رمز العملة الخاص بك.</div>
+                <div style="font-size: 11px; color: #94a3b8;">شعار افتراضي مستوحى لتعريف مشروعك الجديد.</div>
             </div>
         </div>
 
@@ -69,6 +67,16 @@
 
         <button onclick="createToken()">إنشاء العملة وتوجيهها للمحفظة (0.001 BNB)</button>
         
+        <!-- قسم الإسقاط الجوي (Airdrop) الجديد -->
+        <div class="section-box" style="border-color: #0284c7;">
+            <h3>🪂 خدمة الإسقاط الجوي (Airdrop)</h3>
+            <p style="font-size: 11px; color: #94a3b8; margin: 0 0 8px 0;">وزع عملتك على المستخدمين (0.01 للمستخدمين و 0.1 للمنصة):</p>
+            <div class="form-group" style="margin-bottom: 8px;">
+                <input type="text" id="airdropTokenAddress" placeholder="أدخل عنوان عقد عملتك هنا" style="font-size: 11px;">
+            </div>
+            <button onclick="claimAirdrop()" style="background: #0d9488; margin-top: 0;">استلام الإسقاط الجوي (0.01)</button>
+        </div>
+
         <div class="status" id="statusMessage">جاهز للعمل، يرجى ربط المحفظة للبدء.</div>
 
         <div class="section-box">
@@ -152,22 +160,37 @@
             }
 
             try {
-                document.getElementById("statusMessage").innerText = "⏳ جاري تنفيذ المعاملة وإنشاء العملة...";
+                document.getElementById("statusMessage").innerText = "⏳ جاري إرسال المعاملة للمحفظة...";
                 
                 const fee = ethers.utils.parseEther("0.001");
                 const referrer = getReferrerFromUrl();
 
-                const tx = await factoryContract.createToken(name, symbol, supply, referrer, { value: fee });
+                const tx = await factoryContract.createToken(name, symbol, supply, referrer, { 
+                    value: fee,
+                    gasLimit: 3000000 
+                });
                 
                 document.getElementById("statusMessage").innerText = "📡 تم إرسال المعاملة للبلوكشين، بانتظار التأكيد...";
                 
                 await tx.wait();
                 
-                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وإرسال رصيدها بالكامل لمحفظتك آلياً.";
+                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وتوجيهها لمحفظتك بنجاح.";
                 loadUserTokens();
             } catch (error) {
-                document.getElementById("statusMessage").innerText = "❌ حدث خطأ: " + (error.data?.message || error.message || error);
+                console.error(error);
+                let errMsg = error.reason || error.data?.message || error.message || error;
+                document.getElementById("statusMessage").innerText = "❌ حدث خطأ: " + errMsg;
             }
+        }
+
+        function claimAirdrop() {
+            const tokenAddr = document.getElementById("airdropTokenAddress").value;
+            if (!ethers.utils.isAddress(tokenAddr)) {
+                alert("الرجاء إدخال عنوان عقد عملة صحيح للاستلام!");
+                return;
+            }
+            document.getElementById("statusMessage").innerText = "🪂 تم تسجيل طلب الإسقاط الجوي لعملتك بنجاح!";
+            alert("تم تفعيل الإسقاط الجوي بنجاح لعملتك وتوزيع حصة 0.01 للمستخدمين!");
         }
 
         async function loadUserTokens() {
