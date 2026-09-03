@@ -80,7 +80,7 @@
         <div class="status" id="statusMessage">جاهز للعمل، يرجى ربط المحفظة للبدء.</div>
 
         <div class="section-box">
-            <h3>🔗 رابط الإحالة الخاص بك (10% أرباح)</h3>
+            <h3>🔗 رابط الإحالة الخاص بك (1% أرباح)</h3>
             <input type="text" id="refLink" readonly placeholder="اربط محفظتك ليظهر رابط الإحالة" style="font-size: 11px; background: #1e293b; text-align: center;">
         </div>
 
@@ -94,12 +94,13 @@
         <div class="social-links">
             <a href="https://t.me/your_channel" target="_blank">Telegram</a>
             <a href="https://twitter.com/your_handle" target="_blank">Twitter</a>
-            <a href="https://bscscan.com/address/0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934" target="_blank">BscScan Contract</a>
+            <a href="https://bscscan.com/address/0x5396D1Fd33791d8b74C88af4f8220c3467b3be26" target="_blank">BscScan Contract</a>
         </div>
     </div>
 
     <script>
-        const CONTRACT_ADDRESS = "0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934";
+        // عنوان العقد الجديد والموثق بدقة
+        const CONTRACT_ADDRESS = "0x5396D1Fd33791d8b74C88af4f8220c3467b3be26";
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
             "function getUserTokens(address _user) external view returns (address[] memory)"
@@ -172,7 +173,6 @@
                 const fee = ethers.utils.parseEther("0.001");
                 const referrer = getReferrerFromUrl();
 
-                // إرسال الكمية الخام تماماً كما يتعامل معها العقد (والعقد سيقوم بضربها في 10**18 داخلياً)
                 const tx = await factoryContract.createToken(name, symbol, supplyValue, referrer, { 
                     value: fee,
                     gasLimit: 3000000
