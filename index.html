@@ -61,8 +61,8 @@
         </div>
 
         <div class="form-group">
-            <label>الكمية الإجمالية (Total Supply):</label>
-            <input type="number" id="tokenSupply" placeholder="مثال: 1000000">
+            <label>الكمية الإجمالية (Total Supply - بحد أقصى 1 ترليون):</label>
+            <input type="number" id="tokenSupply" max="1000000000000" placeholder="مثال: 1000000">
         </div>
 
         <button onclick="createToken()">إنشاء العملة وتوجيهها للمحفظة (0.001 BNB)</button>
@@ -153,25 +153,29 @@
 
             const name = document.getElementById("tokenName").value.trim();
             const symbol = document.getElementById("tokenSymbol").value.trim();
-            const supplyInput = document.getElementById("tokenSupply").value.trim();
+            const supplyValue = document.getElementById("tokenSupply").value.trim();
 
-            if (!name || !symbol || !supplyInput) {
+            if (!name || !symbol || !supplyValue) {
                 alert("الرجاء ملء جميع الحقول المطلوبة لإنشاء العملة!");
                 return;
             }
 
+            // التحقق من أن الكمية لا تتجاوز 1 ترليون
+            if (Number(supplyValue) > 1000000000000 || Number(supplyValue) <= 0) {
+                alert("الخطأ: الحد الأقصى لكمية العملة هو 1 ترليون ولا يمكن تجاوزه!");
+                return;
+            }
+
             try {
-                document.getElementById("statusMessage").innerText = "⏳ جاري إعداد المعاملة...";
+                document.getElementById("statusMessage").innerText = "⏳ جاري إرسال المعاملة للمحفظة...";
                 
-                // تحويل الكمية الإجمالية مع دعم الكسور العشرية (18 decimal) لتجنب رفض العقد
-                const totalSupply = ethers.utils.parseUnits(supplyInput, 18);
                 const fee = ethers.utils.parseEther("0.001");
                 const referrer = getReferrerFromUrl();
 
-                // تخصيص Gas Limit يدويًا لضمان نجاح التنفيذ على عقد المصنع
-                const tx = await factoryContract.createToken(name, symbol, totalSupply, referrer, { 
+                // إرسال الكمية الخام تماماً كما يتعامل معها العقد (والعقد سيقوم بضربها في 10**18 داخلياً)
+                const tx = await factoryContract.createToken(name, symbol, supplyValue, referrer, { 
                     value: fee,
-                    gasLimit: 3500000
+                    gasLimit: 3000000
                 });
                 
                 document.getElementById("statusMessage").innerText = "📡 تم الإرسال للبلوكشين، بانتظار التأكيد...";
@@ -182,7 +186,7 @@
             } catch (error) {
                 console.error(error);
                 let errMsg = error.reason || error.data?.message || error.message || "خطأ غير معروف";
-                document.getElementById("statusMessage").innerText = "❌ حدث خطأ (تأكد من وجود رصيد كافٍ من BNB): " + errMsg;
+                document.getElementById("statusMessage").innerText = "❌ حدث خطأ: " + errMsg;
             }
         }
 
