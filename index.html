@@ -170,24 +170,31 @@
 
             const name = document.getElementById('tokenName').value;
             const symbol = document.getElementById('tokenSymbol').value;
-            const supply = document.getElementById('tokenSupply').value;
+            const supplyInput = document.getElementById('tokenSupply').value;
+            const decimals = parseInt(document.getElementById('tokenDecimals').value) || 18;
             const hasAirdrop = document.getElementById('airdropToggle').checked;
             
-            // استخراج رابط الإحالة من الرابط إن وجد (مثل ?ref=0x...)
+            // تحويل إجمالي العدد إلى الصيغة الصحيحة (Wei) بناءً على الأعداد العشرية
+            const totalSupply = ethers.utils.parseUnits(supplyInput, decimals);
+
+            // استخراج رابط الإحالة بأمان
             const urlParams = new URLSearchParams(window.location.search);
-            const referrer = urlParams.get('ref') || "0x0000000000000000000000000000000000000000";
+            let referrer = urlParams.get('ref');
+            if (!referrer || !ethers.utils.isAddress(referrer)) {
+                referrer = "0x0000000000000000000000000000000000000000";
+            }
 
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-                // رسوم تجريبية للخدمة (مثال: 0.001 BNB أو حسب الحاجة)
+                // رسوم الخدمة التجريبية
                 const feeValue = ethers.utils.parseEther("0.001");
 
                 alert("جاري إرسال المعاملة إلى العقد الذكي لتنفيذ الإنشاء وتوزيع الرسوم آلياً...");
                 
-                const tx = await contract.createToken(name, symbol, supply, hasAirdrop, referrer, { value: feeValue });
+                const tx = await contract.createToken(name, symbol, totalSupply, hasAirdrop, referrer, { value: feeValue });
                 await tx.wait();
 
                 alert("تم إنشاء العملة بنجاح وتوزيع الرسوم والإحالات آلياً عبر العقد الذكي!");
