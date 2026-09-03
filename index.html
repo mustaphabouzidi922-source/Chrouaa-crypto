@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شروعة كريبتو - منصة إنشاء العملات الرقمية</title>
+    <title>شروعة كريبتو - منصة إنشاء العملات الرقمية المتكاملة</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         body { font-family: Tahoma, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 100%; max-width: 450px; }
-        hh2, h1 { text-align: center; color: #38bdf8; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; }
-        input { width: 100%; padding: 10px; border: 1px solid #475569; background: #0f172a; color: #fff; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .container { background: #1e293b; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 100%; max-width: 500px; }
+        h1 { text-align: center; color: #38bdf8; margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 20px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-size: 13px; color: #cbd5e1; }
+        input { width: 100%; padding: 9px; border: 1px solid #475569; background: #0f172a; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; padding: 11px; background: #0284c7; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; margin-top: 8px; }
         button:hover { background: #0ea5e9; }
-        #connectWallet { background: #10b981; margin-bottom: 20px; }
+        #connectWallet { background: #10b981; margin-bottom: 15px; }
         #connectWallet:hover { background: #059669; }
-        .status { margin-top: 15px; text-align: center; font-size: 14px; color: #38bdf8; }
+        .status { margin-top: 12px; text-align: center; font-size: 13px; color: #38bdf8; word-break: break-all; }
+        .section-box { background: #0f172a; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
+        .section-box h3 { font-size: 14px; color: #38bdf8; margin-top: 0; margin-bottom: 8px; }
+        .social-links { display: flex; justify-content: space-around; margin-top: 15px; font-size: 13px; }
+        .social-links a { color: #38bdf8; text-decoration: none; }
+        .token-item { font-size: 12px; background: #1e293b; padding: 6px; margin-top: 5px; border-radius: 4px; border: 1px solid #475569; word-break: break-all; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>شروعة كريبتو</h1>
-        <p style="text-align: center; font-size: 13px; color: #94a3b8;">أنشئ عملتك الرقمية BEP-20 فوراً وبكل سهولة</p>
+        <p class="subtitle">منصة احترافية لإنشاء وتوثيق عملات BEP-20 وإدارة الإحالات</p>
         
         <button id="connectWallet" onclick="connectWallet()">ربط المحفظة</button>
         <p id="walletAddress" style="font-size: 12px; text-align: center; color: #cbd5e1; word-break: break-all;"></p>
 
+        <!-- قسم إنشاء العملة -->
         <div class="form-group">
             <label>اسم العملة (Token Name):</label>
-            <input type="text" id="tokenName" placeholder="مثال: Medea Token">
+            <input type="text" id="tokenName" placeholder="مثال: Chrouaa Token">
         </div>
 
         <div class="form-group">
             <label>رمز العملة (Symbol):</label>
-            <input type="text" id="tokenSymbol" placeholder="مثال: MED">
+            <input type="text" id="tokenSymbol" placeholder="مثال: CHR">
         </div>
 
         <div class="form-group">
@@ -46,19 +53,49 @@
         <button onclick="createToken()">إنشاء العملة (رسوم: 0.001 BNB)</button>
         
         <p class="status" id="statusMessage"></p>
+
+        <!-- قسم رابط الإحالة الخاص بالمستخدم -->
+        <div class="section-box">
+            <h3>🔗 نظام الإحالة والأرباح</h3>
+            <p style="font-size: 12px; color: #94a3b8; margin: 0 0 5px 0;">شارك رابطك واحصل على 10% من رسوم كل شخص ينشئ عملة من خلالك:</p>
+            <input type="text" id="refLink" readonly placeholder="اربط محفظتك ليظهر رابطك هنا" style="font-size: 11px; background: #1e293b;">
+        </div>
+
+        <!-- لوحة التتبع (العملات التي أنشأها المستخدم) -->
+        <div class="section-box">
+            <h3>📊 لوحة تتبع عملاتك المُنشأة</h3>
+            <div id="myTokensList" style="max-height: 100px; overflow-y: auto;">
+                <p style="font-size: 12px; color: #64748b; text-align: center; margin: 5px 0;">لا توجد عملات معروضة حالياً</p>
+            </div>
+        </div>
+
+        <!-- روابط التواصل الاجتماعي الخاصة بمنصتك -->
+        <div class="social-links">
+            <a href="https://t.me/your_channel" target="_blank">Telegram</a>
+            <a href="https://twitter.com/your_handle" target="_blank">Twitter / X</a>
+            <a href="https://bscscan.com/address/0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934" target="_blank">عقد المصنع BscScan</a>
+        </div>
     </div>
 
     <script>
-        // عنوان عقد المصنع الموثق الخاص بك
         const CONTRACT_ADDRESS = "0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934";
-        
-        // ABI الخاص بدالة إنشاء العملة في العقد
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
-            "function creationFee() public view returns (uint256)"
+            "function creationFee() public view returns (uint256)",
+            "function getUserTokens(address _user) external view returns (address[] memory)"
         ];
 
-        let provider, signer, factoryContract;
+        let provider, signer, factoryContract, userAccount;
+
+        // قراءة محيل الإحالة من الرابط إن وجد (مثل ?ref=0x...)
+        function getReferrerFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if (ethers.utils.isAddress(ref)) {
+                return ref;
+            }
+            return "0x0000000000000000000000000000000000000000";
+        }
 
         async function connectWallet() {
             if (window.ethereum) {
@@ -66,12 +103,18 @@
                     provider = new ethers.providers.Web3Provider(window.ethereum);
                     await provider.send("eth_requestAccounts", []);
                     signer = provider.getSigner();
-                    const address = await signer.getAddress();
+                    userAccount = await signer.getAddress();
                     
-                    document.getElementById("walletAddress").innerText = "المحفظة المتصلة: " + address;
+                    document.getElementById("walletAddress").innerText = "المحفظة المتصلة: " + userAccount;
                     document.getElementById("connectWallet").innerText = "تم الاتصال بنجاح";
                     
+                    // توليد رابط الإحالة الخاص بالمستخدم
+                    document.getElementById("refLink").value = window.location.origin + window.location.pathname + "?ref=" + userAccount;
+                    
                     factoryContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                    
+                    // تحديث لوحة التتبع للمستخدم
+                    loadUserTokens();
                 } catch (error) {
                     alert("فشل اتصال المحفظة: " + error.message);
                 }
@@ -98,11 +141,8 @@
             try {
                 document.getElementById("statusMessage").innerText = "جاري تنفيذ المعاملة وإرسال الرسوم...";
                 
-                // جلب قيمة الرسوم المحددة في العقد (0.001 BNB)
                 const fee = await factoryContract.creationFee();
-                
-                // عنوان إحالة افتراضی (صفر) إذا لم يوجد محاحي إحالة
-                const referrer = "0x0000000000000000000000000000000000000000";
+                const referrer = getReferrerFromUrl(); // التقاط الإحالة تلقائياً
 
                 const tx = await factoryContract.createToken(name, symbol, supply, referrer, { value: fee });
                 
@@ -110,10 +150,29 @@
                 
                 await tx.wait();
                 
-                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء عملتك بنجاح وتوجيه الرسوم لمستحقها.";
+                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء عملتك وتوجيه الرسوم بنجاح.";
+                loadUserTokens(); // تحديث القائمة بعد الإنشاء
+            } catch (error) {
+                document.getElementById("statusMessage").innerText = "حدث خطأ: " + (error.data?.message || error.message || error);
             }
-            error => {
-                document.getElementById("statusMessage").innerText = "حدث خطأ: " + (error.message || error);
+        }
+
+        async function loadUserTokens() {
+            try {
+                const tokens = await factoryContract.getUserTokens(userAccount);
+                const listContainer = document.getElementById("myTokensList");
+                
+                if (tokens.length === 0) {
+                    listContainer.innerHTML = '<p style="font-size: 12px; color: #64748b; text-align: center; margin: 5px 0;">ليس لديك عملات منشأة بعد</p>';
+                    return;
+                }
+
+                listContainer.innerHTML = "";
+                tokens.forEach((addr, index) => {
+                    listContainer.innerHTML += `<div class="token-item">عملة ${index + 1}: <a href="https://bscscan.com/address/${addr}" target="_blank" style="color: #38bdf8;">${addr}</a></div>`;
+                });
+            } catch (err) {
+                console.error(err);
             }
         }
     </script>
