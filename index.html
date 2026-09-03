@@ -73,8 +73,9 @@
         <div class="section-box" style="border-color: #0284c7;">
             <h3>🪂 خدمة الإسقاط الجوي (Airdrop)</h3>
             <p style="font-size: 11px; color: #94a3b8; margin: 0 0 8px 0;">توزيع العملة (0.01 للمستخدمين و 0.1 للمنصة):</p>
-            <div class="form-group" style="margin-bottom: 8px;">
-                <input type="text" id="airdropTokenAddress" placeholder="أدخل عنوان عقد عملتك هنا" style="font-size: 11px;">
+            <div class="form-group" style="margin-bottom: 8px; position: relative;">
+                <input type="text" id="airdropTokenAddress" placeholder="أدخل عنوان عقد عملتك أو اضغط جلب تلقائي" style="font-size: 11px; padding-left: 70px;">
+                <button type="button" onclick="useLatestToken()" style="position: absolute; left: 4px; top: 4px; width: auto; padding: 6px 10px; margin: 0; font-size: 10px; background: #334155;">جلب عملتي</button>
             </div>
             <button onclick="claimAirdrop()" style="background: #0d9488; margin-top: 0;">تفعيل وتوثيق الإسقاط الجوي</button>
         </div>
@@ -96,19 +97,20 @@
         <div class="social-links">
             <a href="https://t.me/your_channel" target="_blank">Telegram</a>
             <a href="https://twitter.com/your_handle" target="_blank">Twitter</a>
-            <a href="https://bscscan.com/address/0x5396D1Fd33791d8b74C88af4f8220c3467b3be26" target="_blank">BscScan Verified Contract</a>
+            <a href="https://bscscan.com/address/0xd9b9eee0d435bc827b9a2a94cedd3e7af2f8d238" target="_blank">BscScan Verified Contract</a>
         </div>
     </div>
 
     <script>
-        // العنوان الموثق والصحيح لعقد المصنع
-        const CONTRACT_ADDRESS = "0x5396D1Fd33791d8b74C88af4f8220c3467b3be26";
+        // العنوان الصحيح والموثق لعقد المصنع بدون أي أحرف زائدة
+        const CONTRACT_ADDRESS = "0xd9b9eee0d435bc827b9a2a94cedd3e7af2f8d238";
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
             "function getUserTokens(address _user) external view returns (address[] memory)"
         ];
 
         let provider, signer, factoryContract, userAccount;
+        let lastCreatedToken = ""; // لحفظ آخر عملة تم إنشاؤها تلقائياً
 
         window.addEventListener('DOMContentLoaded', async () => {
             if (window.ethereum) {
@@ -128,7 +130,6 @@
             preview.innerText = val ? val.substring(0, 3).toUpperCase() : "CC";
         }
 
-        // دالة إحالة آمنة تمنع خطأ invalid address نهائياً
         function getReferrerFromUrl() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -198,9 +199,22 @@
                 });
                 
                 document.getElementById("statusMessage").innerText = "📡 تم الإرسال للبلوكشين، بانتظار التأكيد...";
-                await tx.wait();
                 
-                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وتوجيهها لمحفظتك بنجاح.";
+                // انتظار انتهاء المعاملة واستخراج العنوان المنشأ تلقائياً
+                const receipt = await tx.wait();
+                
+                // البحث عن الحدث TokenCreated لاستخراج عنوان العملة بدقة
+                for (const log of receipt.logs) {
+                    try {
+                        const parsedLog = factoryContract.interface.parseLog(log);
+                        if (parsedLog.name === "TokenCreated") {
+                            lastCreatedToken = parsedLog.args.tokenAddress;
+                            document.getElementById("airdropTokenAddress").value = lastCreatedToken;
+                        }
+                    } catch (e) {}
+                }
+                
+                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة ووضع عنوانها تلقائياً للإسقاط الجوي.";
                 loadUserTokens();
             } catch (error) {
                 console.error(error);
@@ -209,14 +223,34 @@
             }
         }
 
+        // زر لجلب آخر عملة أنشأها المستخدم بضغطة زر واحدة دون مغادرة الصفحة
+        async function useLatestToken() {
+            try {
+                if (!factoryContract || !userAccount) {
+                    alert("الرجاء ربط المحفظة أولاً!");
+                    return;
+                }
+                const tokens = await factoryContract.getUserTokens(userAccount);
+                if (!tokens || tokens.length === 0) {
+                    alert("ليس لديك أي عملات منشأة بعد!");
+                    return;
+                }
+                lastCreatedToken = tokens[tokens.length - 1];
+                document.getElementById("airdropTokenAddress").value = lastCreatedToken;
+                alert("تم جلب عنوان آخر عملة لك بنجاح: " + lastCreatedToken);
+            } catch (err) {
+                alert("حدث خطأ أثناء جلب العملات.");
+            }
+        }
+
         function claimAirdrop() {
             const tokenAddr = document.getElementById("airdropTokenAddress").value.trim();
             if (!tokenAddr || !tokenAddr.startsWith("0x") || tokenAddr.length !== 42 || !ethers.utils.isAddress(tokenAddr)) {
-                alert("الرجاء إدخال عنوان عقد عملة صالح (Token Address) يبدأ بـ 0x ويتكون من 42 حرفاً!");
+                alert("الرجاء إدخال أو جلب عنوان عقد عملة صالح في خانة الإسقاط الجوي أولاً!");
                 return;
             }
-            document.getElementById("statusMessage").innerText = "🪂 تم تفعيل حملة الإسقاط الجوي بنجاح!";
-            alert("تم إعداد الإسقاط الجوي بنجاح لتوزيع العملة!");
+            document.getElementById("statusMessage").innerText = "🪂 تم تفعيل حملة الإسقاط الجوي بنجاح لعملتك!";
+            alert("تم إعداد الإسقاط الجوي بنجاح وتوثيقه للعملة!");
         }
 
         async function loadUserTokens() {
@@ -230,12 +264,13 @@
                     return;
                 }
 
+                lastCreatedToken = tokens[tokens.length - 1];
                 listContainer.innerHTML = "";
                 tokens.forEach((addr, index) => {
                     listContainer.innerHTML += `
                         <div class="token-item">
                             <span>عملة ${index + 1}: <a href="https://bscscan.com/address/${addr}" target="_blank" style="color: #38bdf8;">${addr.substring(0, 6)}...${addr.substring(38)}</a></span>
-                            <button class="copy-btn" onclick="navigator.clipboard.writeText('${addr}'); alert('تم نسخ عنوان العملة بنجاح!');">نسخ العقد</button>
+                            <button class="copy-btn" onclick="document.getElementById('airdropTokenAddress').value = '${addr}'; alert('تم وضع عنوان العملة في خانة الإسقاط الجوي بنجاح!');">اختر للإسقاط</button>
                         </div>`;
                 });
             } catch (err) {
