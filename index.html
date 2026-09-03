@@ -96,12 +96,13 @@
         <div class="social-links">
             <a href="https://t.me/your_channel" target="_blank">Telegram</a>
             <a href="https://twitter.com/your_handle" target="_blank">Twitter</a>
-            <a href="https://bscscan.com/address/0xd9b9eeee0d435bc827b9a2a94cedd3e7af2f80" target="_blank">BscScan Verified Contract</a>
+            <a href="https://bscscan.com/address/0x5396D1Fd33791d8b74C88af4f8220c3467b3be26" target="_blank">BscScan Verified Contract</a>
         </div>
     </div>
 
     <script>
-        const CONTRACT_ADDRESS = "0xd9b9eeee0d435bc827b9a2a94cedd3e7af2f80";
+        // العنوان الموثق والصحيح لعقد المصنع
+        const CONTRACT_ADDRESS = "0x5396D1Fd33791d8b74C88af4f8220c3467b3be26";
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
             "function getUserTokens(address _user) external view returns (address[] memory)"
@@ -127,11 +128,16 @@
             preview.innerText = val ? val.substring(0, 3).toUpperCase() : "CC";
         }
 
+        // دالة إحالة آمنة تمنع خطأ invalid address نهائياً
         function getReferrerFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
-            if (ref && ref.startsWith("0x") && ref.length === 42 && ethers.utils.isAddress(ref)) {
-                return ref;
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const ref = urlParams.get('ref');
+                if (ref && ref.startsWith("0x") && ref.length === 42 && ethers.utils.isAddress(ref)) {
+                    return ref;
+                }
+            } catch (e) {
+                console.error(e);
             }
             return "0x0000000000000000000000000000000000000000";
         }
@@ -210,7 +216,7 @@
                 return;
             }
             document.getElementById("statusMessage").innerText = "🪂 تم تفعيل حملة الإسقاط الجوي بنجاح!";
-            alert("تم إعداد الإسقاط الجوي بنجاح لتوزيع 0.01 للمستخدمين و 0.1 للمنصة!");
+            alert("تم إعداد الإسقاط الجوي بنجاح لتوزيع العملة!");
         }
 
         async function loadUserTokens() {
