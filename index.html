@@ -40,7 +40,7 @@
         
         <div class="text-center mb-10">
             <h2 class="text-3xl font-black mb-3 text-amber-400">أنشئ عملتك الرقمية الخاصة بكل سهولة</h2>
-            <p class="text-slate-400">منصة آمنة لإطلاق رموز BEP-20 وتوزيع الرسوم والإحالات آلياً عبر العقد الذكي.</p>
+            <p class="text-slate-400">منصة آمنة لإطلاق رموز BEP-20 وتوزيع الرسوم والإحالات آلياً عبر العقد الذكي الموثق.</p>
         </div>
 
         <!-- نموذج إنشاء العملة -->
@@ -50,11 +50,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold mb-2 text-slate-300">اسم العملة (Token Name)</label>
-                        <input type="text" id="tokenName" placeholder="مثال: Medea Token" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-slate-100">
+                        <input type="text" id="tokenName" placeholder="مثال: Chrouaa Token" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-slate-100">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold mb-2 text-slate-300">رمز العملة (Symbol)</label>
-                        <input type="text" id="tokenSymbol" placeholder="مثال: MED" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-slate-100">
+                        <input type="text" id="tokenSymbol" placeholder="مثال: CHR" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-slate-100">
                     </div>
                 </div>
 
@@ -80,16 +80,26 @@
                         <span class="text-sm font-semibold text-slate-300">ترويج العملة عبر الإنزال الجوي (Airdrop - اختيارى)</span>
                         <input type="checkbox" id="airdropToggle" class="w-5 h-5 accent-amber-500 cursor-pointer">
                     </div>
-                    <p class="text-xs text-slate-400">رسوم الإنشاء 2% + 0.1% إحالة تلقائية (تذهب مباشرة لمحفظتك والعقد المنشور).</p>
+                    <p class="text-xs text-slate-400">رسوم الإنشاء 2% + 0.1% إحالة تلقائية تذهب مباشرة لمحفظتك والعقد الموثق.</p>
                 </div>
 
                 <!-- زر الإنشاء -->
                 <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-950 font-black py-4 rounded-xl shadow-xl shadow-amber-500/20 text-lg transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-rocket"></i>
-                    <span>إنشاء العملة الرقمية عبر العقد الذكي</span>
+                    <span>إنشاء العملة الرقمية المستقلة</span>
                 </button>
 
             </form>
+
+            <!-- صندوق ظهور عنوان العملة الجديدة بعد النجاح -->
+            <div id="resultBox" class="hidden mt-6 bg-slate-950 border border-amber-500/50 p-5 rounded-2xl space-y-3 text-center">
+                <div class="text-amber-400 font-bold text-lg"><i class="fa-solid fa-circle-check"></i> تم إنشاء عملتك الرقمية بنجاح!</div>
+                <p class="text-xs text-slate-400">عنوان عقد عملتك الجديدة المستقل على شبكة BNB:</p>
+                <div class="flex items-center justify-center gap-2 bg-slate-900 p-3 rounded-xl border border-slate-800">
+                    <span id="createdTokenAddress" class="font-mono text-amber-300 text-sm select-all">0x...</span>
+                    <button onclick="copyTokenAddress()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-400 transition-all">نسخ</button>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -117,20 +127,20 @@
     <!-- Footer -->
     <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
         <p>&copy; 2026 Chrouaa Crypto. جميع الحقوق محفوظة.</p>
-        <p class="mt-1 text-slate-600">عقد المنصة: <span class="font-mono text-slate-400">0x71732e1f9b8422bbb335e6f5748c05659a823d39</span></p>
+        <p class="mt-1 text-slate-600">عقد المصنع الموثق: <a href="https://bscscan.com/address/0xacC3A64ADFb4d9247134Ad3f73F323A28e21D47A#code" target="_blank" class="font-mono text-amber-400 underline">0xacC3A64ADFb4d9247134Ad3f73F323A28e21D47A</a></p>
     </footer>
 
     <!-- Web3 & Script Integration -->
-    <script src="https://cdn.jsdelivr.5.7.2/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script>
-        // استخدام عنوان العقد الصحيح والموثق بدقة
-        const CONTRACT_ADDRESS = "0x71732e1f9b8422bbb335e6f5748c05659a823d39";
+        // عنوان عقد المصنع الموثق الجديد
+        const CONTRACT_ADDRESS = "0xacC3A64ADFb4d9247134Ad3f73F323A28e21D47A";
         const CONTRACT_ABI = [
-            "function createToken(string _name, string _symbol, uint256 _totalSupply, bool _hasAirdrop, address _referrer) external payable"
+            "function createToken(string _name, string _symbol, uint256 _totalSupply, bool _hasAirdrop, address _referrer) external payable returns (address)"
         ];
 
         let userAccount = null;
+        let lastCreatedToken = "";
         const connectWalletBtn = document.getElementById('connectWalletBtn');
         const walletModal = document.getElementById('walletModal');
         const closeModal = document.getElementById('closeModal');
@@ -176,7 +186,7 @@
             const decimals = parseInt(document.getElementById('tokenDecimals').value) || 18;
             const hasAirdrop = document.getElementById('airdropToggle').checked;
             
-            const totalSupply = ethers.utils.parseUnits(supplyInput, decimals);
+            const totalSupply = BigInt(supplyInput);
 
             const urlParams = new URLSearchParams(window.location.search);
             let referrer = urlParams.get('ref');
@@ -189,20 +199,46 @@
                 const signer = provider.getSigner();
                 const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-                // رسوم الخدمة التجريبية المعروضة
                 const feeValue = ethers.utils.parseEther("0.001");
 
-                alert("جاري إرسال المعاملة إلى العقد الذكي لتنفيذ الإنشاء وتوزيع الرسوم آلياً...");
+                alert("جاري إرسال المعاملة وإنشاء عقد التوكن المستقل الخاص بك...");
                 
                 const tx = await contract.createToken(name, symbol, totalSupply, hasAirdrop, referrer, { value: feeValue });
-                await tx.wait();
+                
+                const receipt = await tx.wait();
+                
+                let newTokenAddr = "";
+                for (const log of receipt.logs) {
+                    try {
+                        const parsedLog = contract.interface.parseLog(log);
+                        if (parsedLog.name === "TokenCreated") {
+                            newTokenAddr = parsedLog.args.tokenAddress;
+                            break;
+                        }
+                    } catch (err) {}
+                }
 
-                alert("تم إنشاء العملة بنجاح وتوزيع الرسوم والإحالات آلياً عبر العقد الذكي!");
+                if (newTokenAddr) {
+                    lastCreatedToken = newTokenAddr;
+                    document.getElementById('createdTokenAddress').innerText = newTokenAddr;
+                    document.getElementById('resultBox').classList.remove('hidden');
+                    alert("تم إنشاء العملة الرقمية المستقلة بنجاح وتوزيع الرسوم!");
+                } else {
+                    alert("تمت المعاملة بنجاح، ولكن تعذر جلب العنوان تلقائياً، يمكنك مراجعته في BscScan.");
+                }
+
             } catch (err) {
                 console.error(err);
                 alert("حدث خطأ أثناء تنفيذ المعاملة: " + (err.data?.message || err.message));
             }
         });
+
+        function copyTokenAddress() {
+            if (lastCreatedToken) {
+                navigator.clipboard.writeText(lastCreatedToken);
+                alert("تم نسخ عنوان عقد عملتك الجديدة بنجاح!");
+            }
+        }
     </script>
 </body>
 </html>
