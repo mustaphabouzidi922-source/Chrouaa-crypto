@@ -67,7 +67,7 @@
 
         <button onclick="createToken()">إنشاء العملة وتوجيهها للمحفظة (0.001 BNB)</button>
         
-        <!-- قسم الإسقاط الجوي الآمن -->
+        <!-- قسم الإسقاط الجوي -->
         <div class="section-box" style="border-color: #0284c7;">
             <h3>🪂 خدمة الإسقاط الجوي (Airdrop)</h3>
             <p style="font-size: 11px; color: #94a3b8; margin: 0 0 8px 0;">توزيع العملة (0.01 للمستخدمين و 0.1 للمنصة):</p>
@@ -125,7 +125,7 @@
             if (window.ethereum) {
                 try {
                     provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", [], { gasLimit: null });
+                    await provider.send("eth_requestAccounts", []);
                     signer = provider.getSigner();
                     userAccount = await signer.getAddress();
                     
@@ -136,7 +136,7 @@
                     
                     factoryContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
                     loadUserTokens();
-                    document.getElementById("statusMessage").innerText = "✅ تم ربط المحفظة بنجاح، المنصة جاهزة.";
+                    document.getElementById("statusMessage").innerText = "✅ تم ربط المحفظة بنجاح.";
                 } catch (error) {
                     alert("فشل اتصال المحفظة: " + error.message);
                 }
@@ -153,24 +153,28 @@
 
             const name = document.getElementById("tokenName").value.trim();
             const symbol = document.getElementById("tokenSymbol").value.trim();
-            const supply = document.getElementById("tokenSupply").value.trim();
+            const supplyInput = document.getElementById("tokenSupply").value.trim();
 
-            if (!name || !symbol || !supply) {
+            if (!name || !symbol || !supplyInput) {
                 alert("الرجاء ملء جميع الحقول المطلوبة لإنشاء العملة!");
                 return;
             }
 
             try {
-                document.getElementById("statusMessage").innerText = "⏳ يرجى التأكيد على المعاملة في محفظتك...";
+                document.getElementById("statusMessage").innerText = "⏳ جاري إعداد المعاملة...";
                 
+                // تحويل الكمية الإجمالية مع دعم الكسور العشرية (18 decimal) لتجنب رفض العقد
+                const totalSupply = ethers.utils.parseUnits(supplyInput, 18);
                 const fee = ethers.utils.parseEther("0.001");
                 const referrer = getReferrerFromUrl();
 
-                const tx = await factoryContract.createToken(name, symbol, supply, referrer, { 
-                    value: fee
+                // تخصيص Gas Limit يدويًا لضمان نجاح التنفيذ على عقد المصنع
+                const tx = await factoryContract.createToken(name, symbol, totalSupply, referrer, { 
+                    value: fee,
+                    gasLimit: 3500000
                 });
                 
-                document.getElementById("statusMessage").innerText = "📡 جاري تأكيد المعاملة على بلوكشين BSC...";
+                document.getElementById("statusMessage").innerText = "📡 تم الإرسال للبلوكشين، بانتظار التأكيد...";
                 await tx.wait();
                 
                 document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وإرسالها لمحفظتك بنجاح.";
@@ -178,7 +182,7 @@
             } catch (error) {
                 console.error(error);
                 let errMsg = error.reason || error.data?.message || error.message || "خطأ غير معروف";
-                document.getElementById("statusMessage").innerText = "❌ حدث خطأ: " + errMsg;
+                document.getElementById("statusMessage").innerText = "❌ حدث خطأ (تأكد من وجود رصيد كافٍ من BNB): " + errMsg;
             }
         }
 
@@ -188,7 +192,7 @@
                 alert("الرجاء إدخال عنوان عقد عملة صالح (Token Address) أولاً!");
                 return;
             }
-            document.getElementById("statusMessage").innerText = "🪂 تم تسجيل حملة الإسقاط الجوي لعملتك وتوزيع الحصص بنجاح!";
+            document.getElementById("statusMessage").innerText = "🪂 تم تفعيل حملة الإسقاط الجوي بنجاح!";
             alert("تم إعداد الإسقاط الجوي بنجاح لتوزيع 0.01 للمستخدمين و 0.1 للمنصة!");
         }
 
