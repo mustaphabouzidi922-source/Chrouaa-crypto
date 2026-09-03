@@ -36,15 +36,18 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-4 py-10 flex-grow w-full">
+    <main class="max-w-4xl mx-auto px-4 py-10 flex-grow w-full space-y-8">
         
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-black mb-3 text-amber-400">أنشئ عملتك الرقمية الخاصة بكل سهولة</h2>
-            <p class="text-slate-400">منصة آمنة لإطلاق رموز BEP-20 وتوزيع الرسوم والإحالات آلياً عبر العقد الذكي الموثق.</p>
+        <div class="text-center">
+            <h2 class="text-3xl font-black mb-3 text-amber-400">منصة إنشاء وإدارة العملات الرقمية</h2>
+            <p class="text-slate-400">أطلق عملة BEP-20 مستقلة، أضفها لمحفظتك فوراً، وتتبع إنجازاتك بكل أمان.</p>
         </div>
 
         <!-- نموذج إنشاء العملة -->
         <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-amber-400 flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> إطلاق عملة جديدة
+            </h3>
             <form id="tokenForm" class="space-y-6">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -69,11 +72,6 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold mb-2 text-slate-300">وصف العملة (Description)</label>
-                    <textarea id="tokenDesc" rows="3" placeholder="اكتب وصفاً موجزاً لعملتك..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-slate-100"></textarea>
-                </div>
-
                 <!-- خيارات إضافية -->
                 <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-3">
                     <div class="flex items-center justify-between">
@@ -91,14 +89,45 @@
 
             </form>
 
-            <!-- صندوق ظهور عنوان العملة الجديدة بعد النجاح -->
-            <div id="resultBox" class="hidden mt-6 bg-slate-950 border border-amber-500/50 p-5 rounded-2xl space-y-3 text-center">
+            <!-- صندوق ظهور عنوان العملة الجديدة بعد النجاح مع زر إضافة للمحفظة -->
+            <div id="resultBox" class="hidden mt-6 bg-slate-950 border border-amber-500/50 p-5 rounded-2xl space-y-4 text-center">
                 <div class="text-amber-400 font-bold text-lg"><i class="fa-solid fa-circle-check"></i> تم إنشاء عملتك الرقمية بنجاح!</div>
                 <p class="text-xs text-slate-400">عنوان عقد عملتك الجديدة المستقل على شبكة BNB:</p>
                 <div class="flex items-center justify-center gap-2 bg-slate-900 p-3 rounded-xl border border-slate-800">
                     <span id="createdTokenAddress" class="font-mono text-amber-300 text-sm select-all">0x...</span>
                     <button onclick="copyTokenAddress()" class="bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-400 transition-all">نسخ</button>
                 </div>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <button onclick="addTokenToWallet()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> إضافة للمحفظة (MetaMask)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- لوحة تتبع العملات والرسوم (Dashboard) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-amber-400 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line"></i> لوحة تتبع عملاتك المنشأة
+            </h3>
+            <p class="text-xs text-slate-400 mb-6">سجل العملات الرقمية التي قمت بإطلاقها عبر محفظتك المتصلة:</p>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400">
+                            <th class="pb-3 px-3">اسم العملة</th>
+                            <th class="pb-3 px-3">الرمز</th>
+                            <th class="pb-3 px-3">عنوان العقد المستقل</th>
+                            <th class="pb-3 px-3">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTokensTable" class="divide-y divide-slate-800/50">
+                        <tr>
+                            <td colspan="4" class="text-center py-6 text-slate-500">لم تقم بإنشاء أي عملات بعد، أو قم بربط المحفظة لعرضها.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -133,14 +162,20 @@
     <!-- Web3 & Script Integration -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script>
-        // عنوان عقد المصنع الموثق الجديد
         const CONTRACT_ADDRESS = "0xacC3A64ADFb4d9247134Ad3f73F323A28e21D47A";
         const CONTRACT_ABI = [
-            "function createToken(string _name, string _symbol, uint256 _totalSupply, bool _hasAirdrop, address _referrer) external payable returns (address)"
+            "function createToken(string _name, string _symbol, uint256 _totalSupply, bool _hasAirdrop, address _referrer) external payable returns (address)",
+            "function userTokens(address, uint256) external view returns (address)"
         ];
+
+        // ضع مفتاح BscScan API الخاص بك هنا إذا أردت تفعيل التوثيق البرمجي الآلي لاحقاً
+        const BSCSCAN_API_KEY = "YOUR_BSCSCAN_API_KEY_HERE";
 
         let userAccount = null;
         let lastCreatedToken = "";
+        let lastCreatedSymbol = "CHR";
+        let lastCreatedName = "Token";
+
         const connectWalletBtn = document.getElementById('connectWalletBtn');
         const walletModal = document.getElementById('walletModal');
         const closeModal = document.getElementById('closeModal');
@@ -164,6 +199,7 @@
                     walletBtnText.innerText = userAccount.substring(0, 6) + "..." + userAccount.substring(38);
                     walletModal.classList.add('hidden');
                     walletModal.classList.remove('flex');
+                    loadUserDashboard();
                     alert("تم ربط المحفظة بنجاح!");
                 } catch (error) {
                     console.error(error);
@@ -180,12 +216,10 @@
                 return;
             }
 
-            const name = document.getElementById('tokenName').value;
-            const symbol = document.getElementById('tokenSymbol').value;
+            lastCreatedName = document.getElementById('tokenName').value;
+            lastCreatedSymbol = document.getElementById('tokenSymbol').value;
             const supplyInput = document.getElementById('tokenSupply').value;
-            const decimals = parseInt(document.getElementById('tokenDecimals').value) || 18;
             const hasAirdrop = document.getElementById('airdropToggle').checked;
-            
             const totalSupply = BigInt(supplyInput);
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -203,17 +237,18 @@
 
                 alert("جاري إرسال المعاملة وإنشاء عقد التوكن المستقل الخاص بك...");
                 
-                const tx = await contract.createToken(name, symbol, totalSupply, hasAirdrop, referrer, { value: feeValue });
-                
+                const tx = await contract.createToken(lastCreatedName, lastCreatedSymbol, totalSupply, hasAirdrop, referrer, { value: feeValue });
                 const receipt = await tx.wait();
                 
                 let newTokenAddr = "";
                 for (const log of receipt.logs) {
                     try {
-                        const parsedLog = contract.interface.parseLog(log);
-                        if (parsedLog.name === "TokenCreated") {
-                            newTokenAddr = parsedLog.args.tokenAddress;
-                            break;
+                        if (log.topics.length >= 3) {
+                            const potentialAddress = "0x" + log.topics[2].slice(26);
+                            if (ethers.utils.isAddress(potentialAddress) && potentialAddress !== "0x0000000000000000000000000000000000000000") {
+                                newTokenAddr = potentialAddress;
+                                break;
+                            }
                         }
                     } catch (err) {}
                 }
@@ -222,9 +257,10 @@
                     lastCreatedToken = newTokenAddr;
                     document.getElementById('createdTokenAddress').innerText = newTokenAddr;
                     document.getElementById('resultBox').classList.remove('hidden');
+                    loadUserDashboard();
                     alert("تم إنشاء العملة الرقمية المستقلة بنجاح وتوزيع الرسوم!");
                 } else {
-                    alert("تمت المعاملة بنجاح، ولكن تعذر جلب العنوان تلقائياً، يمكنك مراجعته في BscScan.");
+                    alert("تمت المعاملة بنجاح! راجع عنوان العملة في BscScan.");
                 }
 
             } catch (err) {
@@ -232,6 +268,65 @@
                 alert("حدث خطأ أثناء تنفيذ المعاملة: " + (err.data?.message || err.message));
             }
         });
+
+        async function loadUserDashboard() {
+            if (!userAccount) return;
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+                
+                let tokensHtml = "";
+                let i = 0;
+                while (true) {
+                    try {
+                        const tokenAddr = await contract.userTokens(userAccount, i);
+                        if (!tokenAddr || tokenAddr === "0x0000000000000000000000000000000000000000") break;
+                        
+                        tokensHtml += `
+                            <tr class="hover:bg-slate-900/50 transition-all">
+                                <td class="py-3 px-3 font-bold text-slate-200">عملة مستقلة</td>
+                                <td class="py-3 px-3 text-amber-400 font-bold">${tokenAddr.substring(0,6)}...</td>
+                                <td class="py-3 px-3 font-mono text-xs text-slate-400 select-all">${tokenAddr}</td>
+                                <td class="py-3 px-3">
+                                    <a href="https://bscscan.com/address/${tokenAddr}#code" target="_blank" class="bg-amber-500/10 text-amber-400 px-3 py-1 rounded-lg text-xs font-bold hover:bg-amber-500 hover:text-slate-950 transition-all">عرض في BscScan</a>
+                                </td>
+                            </tr>
+                        `;
+                        i++;
+                    } catch (err) {
+                        break;
+                    }
+                }
+
+                if (tokensHtml !== "") {
+                    document.getElementById('userTokensTable').innerHTML = tokensHtml;
+                }
+            } catch (err) {
+                console.error("Error loading dashboard:", err);
+            }
+        }
+
+        async function addTokenToWallet() {
+            if (!lastCreatedToken) return;
+            try {
+                const wasAdded = await window.ethereum.request({
+                    method: 'wallet_watchAsset',
+                    params: {
+                        type: 'ERC20',
+                        options: {
+                            address: lastCreatedToken,
+                            symbol: lastCreatedSymbol,
+                            decimals: 18,
+                        },
+                    },
+                });
+                if (wasAdded) {
+                    alert("تمت إضافة العملة إلى محفظتك بنجاح!");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
         function copyTokenAddress() {
             if (lastCreatedToken) {
