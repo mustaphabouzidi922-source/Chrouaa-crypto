@@ -3,38 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شروعة كريبتو - منصة إنشاء العملات الرقمية المتكاملة</title>
+    <title>شروعة كريبتو - Chrouaa Crypto</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
-        body { font-family: Tahoma, sans-serif; background: #0f172a; color: #fff; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: #1e293b; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 100%; max-width: 500px; }
-        h1 { text-align: center; color: #38bdf8; margin-bottom: 5px; }
-        .subtitle { text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 20px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-size: 13px; color: #cbd5e1; }
-        input { width: 100%; padding: 9px; border: 1px solid #475569; background: #0f172a; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        button { width: 100%; padding: 11px; background: #0284c7; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; margin-top: 8px; }
+        body { font-family: Tahoma, sans-serif; background: #0b0f19; color: #fff; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); width: 100%; max-width: 480px; border: 1px solid #334155; }
+        .brand { text-align: center; margin-bottom: 20px; }
+        .brand img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #38bdf8; margin-bottom: 10px; object-fit: cover; background: #0f172a; }
+        h1 { text-align: center; color: #38bdf8; margin: 0; font-size: 22px; }
+        .subtitle { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 5px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 5px; font-size: 13px; color: #cbd5e1; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #475569; background: #0f172a; color: #fff; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: #38bdf8; }
+        button { width: 100%; padding: 12px; background: #0284c7; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: bold; margin-top: 5px; transition: background 0.3s; }
         button:hover { background: #0ea5e9; }
         #connectWallet { background: #10b981; margin-bottom: 15px; }
         #connectWallet:hover { background: #059669; }
-        .status { margin-top: 12px; text-align: center; font-size: 13px; color: #38bdf8; word-break: break-all; }
-        .section-box { background: #0f172a; padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
-        .section-box h3 { font-size: 14px; color: #38bdf8; margin-top: 0; margin-bottom: 8px; }
+        .status { margin-top: 15px; text-align: center; font-size: 13px; color: #38bdf8; word-break: break-all; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155; }
+        .section-box { background: #0f172a; padding: 12px; border-radius: 10px; margin-top: 15px; border: 1px solid #334155; }
+        .section-box h3 { font-size: 13px; color: #38bdf8; margin: 0 0 8px 0; }
         .social-links { display: flex; justify-content: space-around; margin-top: 15px; font-size: 13px; }
-        .social-links a { color: #38bdf8; text-decoration: none; }
-        .token-item { font-size: 12px; background: #1e293b; padding: 6px; margin-top: 5px; border-radius: 4px; border: 1px solid #475569; word-break: break-all; }
+        .social-links a { color: #38bdf8; text-decoration: none; font-weight: bold; }
+        .token-item { font-size: 12px; background: #1e293b; padding: 8px; margin-top: 6px; border-radius: 6px; border: 1px solid #475569; word-break: break-all; }
+        .logo-generator { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .logo-preview { width: 45px; height: 45px; border-radius: 50%; background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #0f172a; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>شروعة كريبتو</h1>
-        <p class="subtitle">منصة احترافية لإنشاء وتوثيق عملات BEP-20 وإدارة الإحالات</p>
+        <!-- شعار المنصة واسمها -->
+        <div class="brand">
+            <img id="platformLogo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230284c7'/><text x='50' y='57' font-size='40' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>CC</text></svg>" alt="Chrouaa Crypto Logo">
+            <h1>شروعة كريبتو (Chrouaa Crypto)</h1>
+            <p class="subtitle">المنصة الذكية لإنشاء وتوثيق عملات BEP-20 آلياً</p>
+        </div>
         
         <button id="connectWallet" onclick="connectWallet()">ربط المحفظة</button>
-        <p id="walletAddress" style="font-size: 12px; text-align: center; color: #cbd5e1; word-break: break-all;"></p>
+        <p id="walletAddress" style="font-size: 11px; text-align: center; color: #cbd5e1; word-break: break-all; margin-bottom: 15px;"></p>
 
-        <!-- قسم إنشاء العملة -->
+        <!-- اقتراح شعار العملة لمشروعك -->
+        <div class="section-box">
+            <h3>🎨 اقتراح شعار العملة الجديدة</h3>
+            <div class="logo-generator">
+                <div class="logo-preview" id="symbolPreview">CC</div>
+                <div style="font-size: 11px; color: #94a3b8;">هذا شعار مقترح لعملتك، سيظهر تلقائياً بمجرد إدخال رمز العملة الخاص بك.</div>
+            </div>
+        </div>
+
         <div class="form-group">
             <label>اسم العملة (Token Name):</label>
             <input type="text" id="tokenName" placeholder="مثال: Chrouaa Token">
@@ -42,7 +59,7 @@
 
         <div class="form-group">
             <label>رمز العملة (Symbol):</label>
-            <input type="text" id="tokenSymbol" placeholder="مثال: CHR">
+            <input type="text" id="tokenSymbol" placeholder="مثال: CHR" oninput="updateSymbolPreview(this.value)">
         </div>
 
         <div class="form-group">
@@ -50,30 +67,26 @@
             <input type="number" id="tokenSupply" placeholder="مثال: 1000000">
         </div>
 
-        <button onclick="createToken()">إنشاء العملة (رسوم: 0.001 BNB)</button>
+        <button onclick="createToken()">إنشاء العملة وتوجيهها للمحفظة (0.001 BNB)</button>
         
-        <p class="status" id="statusMessage"></p>
+        <div class="status" id="statusMessage">جاهز للعمل، يرجى ربط المحفظة للبدء.</div>
 
-        <!-- قسم رابط الإحالة الخاص بالمستخدم -->
         <div class="section-box">
-            <h3>🔗 نظام الإحالة والأرباح</h3>
-            <p style="font-size: 12px; color: #94a3b8; margin: 0 0 5px 0;">شارك رابطك واحصل على 10% من رسوم كل شخص ينشئ عملة من خلالك:</p>
-            <input type="text" id="refLink" readonly placeholder="اربط محفظتك ليظهر رابطك هنا" style="font-size: 11px; background: #1e293b;">
+            <h3>🔗 رابط الإحالة الخاص بك (10% أرباح)</h3>
+            <input type="text" id="refLink" readonly placeholder="اربط محفظتك ليظهر رابط الإحالة" style="font-size: 11px; background: #1e293b; text-align: center;">
         </div>
 
-        <!-- لوحة التتبع (العملات التي أنشأها المستخدم) -->
         <div class="section-box">
-            <h3>📊 لوحة تتبع عملاتك المُنشأة</h3>
-            <div id="myTokensList" style="max-height: 100px; overflow-y: auto;">
+            <h3>📊 لوحة تتبع عملاتك المنشأة</h3>
+            <div id="myTokensList" style="max-height: 110px; overflow-y: auto;">
                 <p style="font-size: 12px; color: #64748b; text-align: center; margin: 5px 0;">لا توجد عملات معروضة حالياً</p>
             </div>
         </div>
 
-        <!-- روابط التواصل الاجتماعي الخاصة بمنصتك -->
         <div class="social-links">
             <a href="https://t.me/your_channel" target="_blank">Telegram</a>
-            <a href="https://twitter.com/your_handle" target="_blank">Twitter / X</a>
-            <a href="https://bscscan.com/address/0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934" target="_blank">عقد المصنع BscScan</a>
+            <a href="https://twitter.com/your_handle" target="_blank">Twitter</a>
+            <a href="https://bscscan.com/address/0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934" target="_blank">BscScan Contract</a>
         </div>
     </div>
 
@@ -81,13 +94,16 @@
         const CONTRACT_ADDRESS = "0x4C1356e1C34C0fCcF7f291364c04D435eE8D9934";
         const CONTRACT_ABI = [
             "function createToken(string memory _name, string memory _symbol, uint256 _totalSupply, address _referrer) external payable returns (address)",
-            "function creationFee() public view returns (uint256)",
             "function getUserTokens(address _user) external view returns (address[] memory)"
         ];
 
         let provider, signer, factoryContract, userAccount;
 
-        // قراءة محيل الإحالة من الرابط إن وجد (مثل ?ref=0x...)
+        function updateSymbolPreview(val) {
+            const preview = document.getElementById("symbolPreview");
+            preview.innerText = val ? val.substring(0, 3).toUpperCase() : "CC";
+        }
+
         function getReferrerFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
@@ -108,12 +124,9 @@
                     document.getElementById("walletAddress").innerText = "المحفظة المتصلة: " + userAccount;
                     document.getElementById("connectWallet").innerText = "تم الاتصال بنجاح";
                     
-                    // توليد رابط الإحالة الخاص بالمستخدم
                     document.getElementById("refLink").value = window.location.origin + window.location.pathname + "?ref=" + userAccount;
                     
                     factoryContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-                    
-                    // تحديث لوحة التتبع للمستخدم
                     loadUserTokens();
                 } catch (error) {
                     alert("فشل اتصال المحفظة: " + error.message);
@@ -139,21 +152,21 @@
             }
 
             try {
-                document.getElementById("statusMessage").innerText = "جاري تنفيذ المعاملة وإرسال الرسوم...";
+                document.getElementById("statusMessage").innerText = "⏳ جاري تنفيذ المعاملة وإنشاء العملة...";
                 
-                const fee = await factoryContract.creationFee();
-                const referrer = getReferrerFromUrl(); // التقاط الإحالة تلقائياً
+                const fee = ethers.utils.parseEther("0.001");
+                const referrer = getReferrerFromUrl();
 
                 const tx = await factoryContract.createToken(name, symbol, supply, referrer, { value: fee });
                 
-                document.getElementById("statusMessage").innerText = "تم إرسال المعاملة، بانتظار التأكيد...";
+                document.getElementById("statusMessage").innerText = "📡 تم إرسال المعاملة للبلوكشين، بانتظار التأكيد...";
                 
                 await tx.wait();
                 
-                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء عملتك وتوجيه الرسوم بنجاح.";
-                loadUserTokens(); // تحديث القائمة بعد الإنشاء
+                document.getElementById("statusMessage").innerText = "🎉 مبروك! تم إنشاء العملة وإرسال رصيدها بالكامل لمحفظتك آلياً.";
+                loadUserTokens();
             } catch (error) {
-                document.getElementById("statusMessage").innerText = "حدث خطأ: " + (error.data?.message || error.message || error);
+                document.getElementById("statusMessage").innerText = "❌ حدث خطأ: " + (error.data?.message || error.message || error);
             }
         }
 
